@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-bg: #283048;
+            --secondary-bg: #859398;
+            --topbar-bg: #2C3E50;
+            --topbar-hover: rgba(255, 255, 255, 0.1);
+            --toast-bg: #4CAF50;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Sidebar (Left Panel) Styling */
+        .left-panel {
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(to right, #004B87, #8fb6d6);
+            color: white;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .left-panel img.logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .left-panel img.profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            margin-bottom: 10px;
+        }
+
+        .left-panel .user-name,
+        .left-panel .user-email {
+            margin: 0;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .left-panel .user-email {
+            font-size: 14px;
+            color: #000000;
+            margin-bottom: 20px;
+        }
+
+        .left-panel .btn {
+            width: 200px;
+            text-align: left;
+            padding: 12px;
+            margin: 5px 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .left-panel .btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .left-panel .btn.active {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .left-panel .help-support {
+            margin-top: auto;
+        }
+
+        /* Top Bar Styling */
+        .top-bar {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            background: linear-gradient(to right, #8fb6d6, #004B87);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .top-bar .search-bar {
+            width: 300px;
+        }
+
+        .top-bar input[type="text"] {
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .top-bar .notification,
+        .top-bar .profile-info {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: background 0.3s ease-in-out;
+            color: white;
+            position: relative;
+        }
+
+        .top-bar .notification:hover,
+        .top-bar .profile-info:hover {
+            background-color: var(--topbar-hover);
+        }
+
+        .top-bar .dropdown-menu {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fafafa;
+            border: 1px solid #202020;
+            border-radius: 4px;
+            padding: 10px 0;
+            display: none;
+        }
+
+        .top-bar .dropdown-menu.show {
+            display: block;
+        }
+
+        .top-bar .dropdown-menu a {
+            color: #333;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .top-bar .dropdown-menu a:hover {
+            background-color: rgba(0, 0, 0, 0.1); /* Slightly darker on hover */
+        }
+
+        .top-bar .notification i,
+        .top-bar .profile-info i {
+            margin-right: 5px;
+        }
+
+        .top-bar .top-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            background-color: #ffffff;
+            height: calc(100% - 70px);
+        }
+
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .profile-card {
+            max-width: 600px; /* Optimal width for profile cards */
+            margin: 40px auto; /* Centers the card with vertical spacing */
+            border-radius: 1rem; /* Rounded corners for a modern feel */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Soft, elegant shadow */
+        }
+
+        .profile-card .card-body {
+            padding: 2rem; /* Ample padding for readability */
+        }
+
+        .profile-card .card-title {
+            font-size: 1.75rem; /* Large title for emphasis */
+            font-weight: bold;
+        }
+
+        .profile-card .d-flex {
+            display: flex;
+            justify-content: space-between; /* Align label and value to opposite sides */
+        }
+
+        .profile-card .mb-3 {
+            margin-bottom: 1.5rem; /* Adequate spacing between sections */
+        }
+
+        .profile-card .font-weight-semibold {
+            font-weight: 600; /* Emphasized text for labels */
+        }
+
+        .profile-card .text-dark {
+            color: #333; /* High-contrast color for text */
+        }
+
+        .profile-card .text-muted {
+            color: #6c757d; /* Subtle color for labels */
+        }
+
+        .profile-card .btn-primary {
+            background-color: #0056b3; /* Consistent button color */
+            border-color: #0056b3; /* Match the border with the button color */
+        }
+
+        .profile-card .form-label {
+            font-weight: 500; /* Label text weight for better clarity */
+        }
+
+
+
+        /* Toast Notification Styling */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--toast-bg);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            animation: fadeIn 0.5s;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Download CSV Button Styling */
+        .btn-download-csv {
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            border: none;
+        }
+
+        .btn-download-csv:hover {
+            background-color: #0056b3; /* Darker shade for hover */
+        }
+
+        /* Chart styles */
+        .chart-container {
+            width: 100%;
+            max-width: 600px; /* Limit max width for consistency */
+            height: 300px;
+            margin-bottom: 20px;
+            position: relative; /* Helps avoid overlap issues */
+        }
+        
+        .btn-group .btn {
+            border-radius: 10px; /* Slightly rounded corners */
+            margin-right: 10px; /* Space between buttons */
+            transition: background-color 0.3s, ease, transform 0.2s ease; /* Smooth transition */
+        }
+        
+        .btn-group .btn:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+        
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar (Left Panel) -->
+    <nav class="left-panel">
+        <img src="/static/images/logo.png" alt="Company Logo" class="logo"> <!-- Replace with your logo -->
+        <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="profile-pic"> <!-- Replace with user's profile picture -->
+        <h4 class="user-name">{{ first_name }} {{ last_name }}</h4>
+        <p class="user-email">{{ email }}</p>
+
+        <!-- Navigation Buttons -->
+        <button class="btn active" id="dashboardBtn" title="Dashboard" aria-label="Dashboard">
+            <i class="bi bi-bar-chart-fill me-2"></i> Dashboard
+        </button>
+        <button class="btn" id="fraudReportsBtn" title="Fraud Reports" aria-label="Fraud Reports">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Fraud Reports
+        </button>
+        <button class="btn" id="transactionReportBtn" title="Transaction Report" aria-label="Transaction Report">
+            <i class="bi bi-credit-card-fill me-2"></i> Transaction Report
+        </button>
+        <button class="btn" id="securityFeaturesBtn" title="Security Features" aria-label="Security Features">
+            <i class="bi bi-lock-fill me-2"></i> Security Features
+        </button>
+        <button class="btn help-support" id="helpSupportBtn" title="Help & Support" aria-label="Help & Support">
+            <i class="bi bi-question-circle-fill me-2"></i> Help & Support
+        </button>
+    </nav>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" class="form-control" placeholder="Search...">
+        </div>
+
+        <!-- Notification & Profile Section -->
+        <div class="top-right">
+            <!-- Notification -->
+            <div class="notification dropdown" aria-label="Notifications" id="notificationBtn">
+                <i class="bi bi-bell-fill"></i>
+                <span>Alert: <span id="notificationCount">3</span> New Notifications</span>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
+                    <li><a class="dropdown-item" href="#">🔔 Alert 1</a></li>
+                    <li><a class="dropdown-item" href="#">🔔 Alert 2</a></li>
+                    <li><a class="dropdown-item" href="#">🔔 Alert 3</a></li>
+                    <li><a class="dropdown-item text-muted" href="#">See all notifications</a></li>
+                </ul>
+            </div>
+
+            <!-- Profile Information -->
+            <div class="profile-info dropdown">
+                <i class="bi bi-person-fill"></i>
+                <span>Profile</span>
+                <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="loadProfileContent('viewProfile')">
+                        <i class="bi bi-eye me-2"></i> View Profile
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="loadProfileContent('editProfile')">
+                        <i class="bi bi-pencil-square me-2"></i> Edit Profile
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="loadProfileContent('changePassword')">
+                        <i class="bi bi-lock me-2"></i> Change Password
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Hello {{ username }} the Detector, Welcome to the Dashboard</h5>
+                <p>Select an option from the left panel to view more information.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS and Custom JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to handle profile options
+        function loadProfileContent(option) {
+            let content = '';
+            switch (option) {
+                case 'viewProfile':
+                    content = `
+                       <div class="card profile-card shadow-lg border-0 rounded-3">
+                            <div class="card-body">
+                                <h5 class="card-title text-dark mb-4 font-weight-bold">User Profile</h5>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div class="font-weight-semibold text-muted">Name:</div>
+                                    <div class="text-dark">{{ first_name }} {{ last_name }}</div>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div class="font-weight-semibold text-muted">Email:</div>
+                                    <div class="text-dark">{{ email }}</div>
+                                </div>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div class="font-weight-semibold text-muted">Username:</div>
+                                    <div class="text-dark">{{ username }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'editProfile':
+                    content = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-dark mb-4 font-weight-bold">Edit Profile</h5>
+                                <form method="POST" action="{% url 'update_profile' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="firstName" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="firstName" name="firstName" value="{{ first_name }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="lastName" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" value="{{ last_name }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control" id="email" name="email" value="{{ email }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="profilePicture" class="form-label">Profile Picture</label>
+                                        <input type="file" class="form-control" id="profilePicture" name="profilePicture">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'changePassword':
+                    content = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-dark mb-4 font-weight-bold">Change Password</h5>
+                                <form method="POST" action="{% url 'change_password' %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="currentPassword" class="form-label">Current Password</label>
+                                        <input type="password" class="form-control" id="currentPassword" name="currentPassword">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newPassword" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="newPassword" name="newPassword">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            document.getElementById("mainContent").innerHTML = content;
+        }
+    </script>
+    
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastNotification">Downloaded Successfully!</div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript for Button Functionalities -->
+    <script>
+        // Toggle active class for buttons
+        document.querySelectorAll('.left-panel .btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelector('.left-panel .btn.active').classList.remove('active');
+                btn.classList.add('active');
+                loadContent(btn.id);
+            });
+        });
+
+        // Load content based on button click
+        function loadContent(buttonId) {
+            let content = '';
+            switch (buttonId) {
+                case "dashboardBtn":
+                    content = `
+                        <div class="container-fluid">
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-primary mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total Transactions</h5>
+                                            <p class="card-text" id="totalTransactions">1,250</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-danger mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Fraudulent Transactions</h5>
+                                            <p class="card-text" id="fraudTransactions">120</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-success mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Fraud Detection Rate</h5>
+                                            <p class="card-text" id="fraudRate">9.6%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-white bg-warning mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">High-Risk Accounts</h5>
+                                            <p class="card-text" id="highRiskAccounts">34</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>Transaction Volume Overview</h6>
+                                            <canvas id="transactionChart" height="150"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>Fraud Detection Rate</h6>
+                                            <canvas id="fraudRateChart" height="150"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>Recent Transactions</h6>
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Transaction ID</th>
+                                                        <th>Date</th>
+                                                        <th>Amount</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>T12345</td>
+                                                        <td>2024-11-10</td>
+                                                        <td>$500</td>
+                                                        <td><span class="badge bg-danger">Fraud</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>T12346</td>
+                                                        <td>2024-11-09</td>
+                                                        <td>$1,200</td>
+                                                        <td><span class="badge bg-success">Verified</span></td>
+                                                    </tr>
+                                                    <!-- More rows as needed -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case "fraudReportsBtn":
+                    content = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Fraud Reports</h5>
+                                <p>Select a report type:</p>
+                                <!-- Show the report type buttons -->
+                                <div class="btn-group mb-3" id="fraudReportBtns" style="display: block;" role="group">
+                                    <button class="btn btn-primary" onclick="generateReport('daily')">
+                                        <i class="bi bi-calendar-day"></i> Daily
+                                    </button>
+                                    <button class="btn btn-primary" onclick="generateReport('weekly')">
+                                        <i class="bi bi-calendar-week"></i> Weekly
+                                    </button>
+                                    <button class="btn btn-primary" onclick="generateReport('monthly')">
+                                        <i class="bi bi-calendar-month"></i> Monthly
+                                    </button>
+                                    <button class="btn btn-primary" onclick="generateReport('yearly')">
+                                        <i class="bi bi-calendar-year"></i> Yearly
+                                    </button>
+                                </div>
+        
+                                <div class="chart-container" id="fraudChartContainer">
+                                    <canvas id="fraudChart"></canvas>
+                                </div>
+        
+                                <button class="btn btn-download-csv" onclick="downloadCSV('fraud')">Download CSV</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case "transactionReportBtn":
+                    content = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Transaction Reports</h5>
+                                <label for="dateRange">Select Date Range:</label>
+                                <input type="date" id="startDate">
+                                <input type="date" id="endDate">
+                                <button class="btn btn-secondary" onclick="filterTransactions()">Filter</button>
+                                <div class="chart-container" id="transactionChart"></div>
+                                <button class="btn btn-download-csv" onclick="downloadCSV('transaction')">Download CSV</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case "securityFeaturesBtn":
+                    content = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Security Features</h5>
+                                <p>Current security status and alerts will be displayed here.</p>
+                                <div class="alert alert-warning">No alerts at this moment.</div>
+                                <button class="btn btn-secondary" onclick="showSecurityOptions()">View Security Options</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case "helpSupportBtn":
+                    content = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Help & Support</h5>
+                                <p>Access help and support resources here.</p>
+                                <ul>
+                                    <li><a href="#" class="text-primary">FAQs</a></li>
+                                    <li><a href="#" class="text-primary">Contact Support</a></li>
+                                    <li><a href="#" class="text-primary">Live Chat</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            document.getElementById("mainContent").innerHTML = content;
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // Load charts if on the dashboard
+            if (buttonId === "dashboardBtn") {
+                renderTransactionChart();
+                renderFraudRateChart();
+            }else if (buttonId === "fraudReportsBtn") {
+                generateReport('daily'); // Default to daily report when loading
+            }
+        }
+
+        // Function to render transaction overview chart
+        function renderTransactionChart() {
+            const ctx = document.getElementById('transactionChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(58, 96, 115, 0.8)');
+            gradient.addColorStop(1, 'rgba(58, 96, 115, 0)');
+        
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Transaction Volume',
+                        data: [150, 200, 180, 220, 300, 400, 450, 500, 420, 380, 340, 300],
+                        borderColor: '#3A6073',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { enabled: true }
+                    }
+                }
+            });
+        }
+
+        // Function to render fraud detection rate chart
+        function renderFraudRateChart() {
+            const ctx = document.getElementById('fraudRateChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Fraudulent', 'Non-Fraudulent'],
+                    datasets: [{
+                        label: 'Fraud Detection Rate (%)',
+                        data: [120, 1130], // Assuming out of 1250 transactions, 120 were fraudulent
+                        backgroundColor: ['#dc2430', '#3A6073'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: { enabled: true }
+                    }
+                }
+            });
+        }
+
+        // Load default content on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadContent('dashboardBtn');
+        });
+
+
+
+
+        // Function to generate report based on the selected time period
+        // Function to generate report based on the selected time period
+        function generateReport(period) {
+            const ctx = document.getElementById('fraudChart').getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(255, 0, 0, 0.8)'); // Top color
+            gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');   // Bottom color
+
+            // Check if fraudChart exists and is an instance of Chart before destroying it
+            if (window.fraudChart instanceof Chart) {
+                window.fraudChart.destroy();
+            }
+
+            // Mock data for each period (you can replace with actual data)
+            let labels, data;
+            switch (period) {
+                case 'daily':
+                    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    data = [5, 3, 6, 8, 4, 5, 7];
+                    break;
+                case 'weekly':
+                    labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                    data = [30, 45, 35, 50];
+                    break;
+                case 'monthly':
+                    labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    data = [120, 150, 130, 170, 180, 200, 160, 190, 210, 240, 220, 250];
+                    break;
+                case 'yearly':
+                    labels = ['2020', '2021', '2022', '2023', '2024'];
+                    data = [500, 620, 700, 850, 920];
+                    break;
+            }
+
+            // Create a new chart instance based on the selected period
+            window.fraudChart = new Chart(ctx, {
+                type: period === 'daily' || period === 'weekly' ? 'bar' : 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `Fraudulent Transactions - ${period.charAt(0).toUpperCase() + period.slice(1)}`,
+                        data: data,
+                        borderColor: '#4A90E2',
+                        tension: 0.4, // Smooth curve
+                        //borderDash: [5, 5], // Dotted line (optional)
+                        borderWidth: 2, // Thinner line
+                        barThickness: 25,  // Make bars a little thinner for a cleaner look
+                        borderRadius: 5,   // Rounded corners for bars
+
+                        backgroundColor: gradient,
+                        borderWidth: 1.5,
+                        fill: true,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true },
+                        tooltip: { enabled: true }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Time' } },
+                        y: { title: { display: true, text: 'Fraudulent Transactions' }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+        // Example function for filtering transactions (placeholder)
+        function filterTransactions() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            document.getElementById('transactionChart').innerHTML = `<p>Displaying transactions from ${startDate} to ${endDate}...</p>`;
+            // Here you would add your transaction filtering logic
+        }
+
+        // Transaction report CSV download functionality
+        function downloadCSV(reportType) {
+            try {
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Date,Transaction ID,Amount,Status\n";
+                if (reportType === 'transaction') {
+                    csvContent += "2024-10-21,T12345,$500,Completed\n";
+                    csvContent += "2024-10-20,T12344,$300,Pending\n";
+                    csvContent += "2024-10-19,T12343,$1200,Failed\n";
+                } else {
+                    csvContent += "Report Type,Details\n";
+                    csvContent += "Fraud,Details for the selected fraud report\n";
+                }
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", reportType + "_report.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link); // Clean up
+                
+                // Show toast notification
+                showToast();
+            } catch (error) {
+                console.error('Error downloading CSV:', error);
+                showToast('Error downloading CSV. Please try again.', 'error');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message = 'Downloaded Successfully!', type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000); // Show for 3 seconds
+        }
+
+        // Toggle notification dropdown
+        document.getElementById('notificationBtn').addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent event bubbling
+            const dropdown = this.querySelector('.dropdown-menu');
+            dropdown.classList.toggle('show');
+        });
+
+        // Toggle profile dropdown
+        document.querySelector('.profile-info').addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevent event bubbling
+            const dropdown = this.querySelector('.dropdown-menu');
+            dropdown.classList.toggle('show');
+        });
+
+        // Close the dropdown if clicked outside
+        window.addEventListener('click', function(event) {
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+            dropdowns.forEach(dropdown => {
+                if (!event.target.closest('.dropdown') && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
