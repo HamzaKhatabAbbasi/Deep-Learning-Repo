@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Prediction Result</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f2f1, #c8e6c9);
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .result-container {
+      min-height: calc(100vh - 1in);
+      margin: 0.5in auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 600px;
+      max-width: 90vw;
+      overflow-y: auto;
+    }
+
+    h2 {
+      color: #000;
+      font-size: 26px;
+    }
+
+    .highlight {
+      color: #d32f2f;
+      font-weight: bold;
+      font-size: 28px;
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 2px solid #ccc;
+    }
+
+    a {
+      text-decoration: none;
+      background-color: #00796b;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    a:hover {
+      background-color: #004d40;
+    }
+
+    .prevention {
+      text-align: left;
+      margin-top: 30px;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .prevention ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="result-container">
+    <h2>Prediction: <span class="highlight">{{ prediction }}</span></h2>
+    <img src="{{ image_path }}" alt="X-ray Image">
+    <br>
+    <a href="/">Select Another Image</a>
+
+    <div class="prevention">
+      {% if prediction.lower() == "pneumonia" %}
+        <h3>Prevention Tips for Pneumonia:</h3>
+        <ul>
+          <li>Get vaccinated (e.g., pneumococcal and flu vaccines).</li>
+          <li>Practice good hygiene (handwashing, mask-wearing).</li>
+          <li>Avoid smoking and secondhand smoke.</li>
+          <li>Keep your immune system strong with healthy food and rest.</li>
+        </ul>
+      {% else %}
+        <h3>Tips to Keep Your Lungs Healthy:</h3>
+        <ul>
+          <li>Avoid exposure to pollutants and allergens.</li>
+          <li>Exercise regularly to strengthen your lungs.</li>
+          <li>Get routine checkups and flu vaccinations.</li>
+          <li>Maintain a smoke-free lifestyle.</li>
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+
+</body>
+</html>

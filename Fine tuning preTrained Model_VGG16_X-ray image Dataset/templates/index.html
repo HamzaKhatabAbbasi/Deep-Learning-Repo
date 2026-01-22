@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI-Powered Chest X-ray Diagnosis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f2f1, #c8e6c9);
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .container {
+      min-height: calc(100vh - 1in); /* 0.5 inch top and bottom */
+      margin: 0.5in auto;
+      width: 600px;
+      max-width: 90vw;
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .logo {
+      width: 200px;
+      height: 220px;
+      margin: 0 auto 10px;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .file-input {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      margin-bottom: 25px;
+    }
+
+    .file-input input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .btn-upload {
+      background-color: #6a1b9a;
+      color: white;
+      padding: 12px 30px;
+      font-size: 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-upload:hover {
+      background-color: #4a148c;
+      transform: scale(1.05);
+    }
+
+    .preview-img {
+      display: none;
+      max-width: 100%;
+      height: auto;
+      margin: 20px auto 10px;
+      border-radius: 10px;
+      border: 2px solid #ccc;
+    }
+
+    .btn-submit {
+      background-color: #6a1b9a;
+      color: white;
+      padding: 12px 30px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.3s;
+      margin-top: 20px;
+    }
+
+    .btn-submit:hover {
+      background-color: #4a148c;
+      transform: scale(1.05);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="{{ url_for('static', filename='logo_0.png') }}" class="logo" alt="Logo">
+    <h1>AI Powered Chest X-ray Diagnosis</h1>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+      <div class="file-input">
+        <button class="btn-upload" type="button">Choose Image</button>
+        <input type="file" name="file" accept="image/*" onchange="previewImage(event)" required>
+      </div>
+      <img id="preview" class="preview-img" src="#" alt="Image Preview">
+      <input type="submit" value="Predict" class="btn-submit">
+    </form>
+  </div>
+
+  <script>
+    const fileInput = document.querySelector('input[type="file"]');
+    const customBtn = document.querySelector('.btn-upload');
+
+    customBtn.addEventListener('click', () => fileInput.click());
+
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const output = document.getElementById('preview');
+        output.src = reader.result;
+        output.style.display = 'block';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  </script>
+</body>
+</html>
